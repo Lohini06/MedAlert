@@ -34,13 +34,20 @@ Three stages:
 
 Analysis of 5,000 patient records from FDA FAERS:
 
-| Chart | Preview |
-|-------|---------|
-| ADR Severity Distribution | ![Target](notebooks/charts/01_target_distribution.png) |
-| Patient Demographics | ![Demographics](notebooks/charts/02_demographics.png) |
-| Drug Analysis | ![Drugs](notebooks/charts/03_drug_analysis.png) |
-| Risk Factors | ![Risk](notebooks/charts/04_risk_factors.png) |
-| Correlation Heatmap | ![Correlation](notebooks/charts/05_correlation.png) |
+### ADR Severity Distribution
+![Target Distribution](notebooks/charts/01_target_distribution.png)
+
+### Patient Demographics
+![Demographics](notebooks/charts/02_demographics.png)
+
+### Drug Analysis
+![Drug Analysis](notebooks/charts/03_drug_analysis.png)
+
+### Risk Factors
+![Risk Factors](notebooks/charts/04_risk_factors.png)
+
+### Correlation Heatmap
+![Correlation](notebooks/charts/05_correlation.png)
 
 ## Results
 
