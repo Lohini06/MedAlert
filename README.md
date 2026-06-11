@@ -1,25 +1,62 @@
-# 💊 MedAlert — Multimodal Adverse Drug Reaction Prediction
+# 💊 MedAlert — Adverse Drug Reaction Predictor
 
-A multimodal AI system that predicts adverse drug reaction (ADR) risk by combining **BioBERT** (clinical text) and **XGBoost** (structured patient data) using a **late-fusion architecture** with **SHAP explainability**.
+Most drug safety systems only look at structured patient data — age, dosage, history. They ignore what's written in clinical notes, even though that's often where the real story is.
 
----
+MedAlert fixes that. It reads both — combining **clinical text** (via BioBERT) and **structured patient data** (via XGBoost) to predict whether a drug reaction will turn serious, and explains *why* using SHAP.
 
-## 🏗️ Architecture
-Clinical Text ──→ BioBERT Encoder ──→ Text Embedding (128d)
-│
-▼
-Late Fusion MLP ──→ ADR Risk Score
-▲
-Structured Data ──→ XGBoost ──→ Risk Probability (1d)
-
-**Three-stage pipeline:**
-1. **BioBERT** encodes drug name, route, active ingredient, and reactions into a 128-dim embedding
-2. **XGBoost** processes structured patient features (age, weight, dose, duration) into a risk probability
-3. **Fusion MLP** combines both into a final ADR risk score with SHAP explanations
+Built on real FDA adverse event data. Interpretable by design.
 
 ---
 
-## 📁 Project Structure
+## How It Works
+
+```
+Drug name, route, reactions (text)
+        │
+        ▼
+   BioBERT Encoder ──────────────────┐
+                                     ▼
+                             Late-Fusion MLP ──→ ADR Risk Score + Explanation
+                                     ▲
+   Age, dose, duration (numbers)     │
+        │                            │
+        ▼                            │
+   XGBoost Classifier ───────────────┘
+```
+
+Three stages:
+1. **BioBERT** reads the clinical text and encodes it into a 128-dim embedding
+2. **XGBoost** processes structured features like age, weight, dose, and duration
+3. **Fusion MLP** combines both and outputs a risk score — with SHAP showing exactly which factors drove it
+
+---
+## 📊 Data Insights
+
+Analysis of 5,000 patient records from FDA FAERS:
+
+| Chart | Preview |
+|-------|---------|
+| ADR Severity Distribution | ![Target](notebooks/charts/01_target_distribution.png) |
+| Patient Demographics | ![Demographics](notebooks/charts/02_demographics.png) |
+| Drug Analysis | ![Drugs](notebooks/charts/03_drug_analysis.png) |
+| Risk Factors | ![Risk](notebooks/charts/04_risk_factors.png) |
+| Correlation Heatmap | ![Correlation](notebooks/charts/05_correlation.png) |
+
+## Results
+
+| Model | AUC-ROC | F1 Score |
+|-------|---------|----------|
+| XGBoost only | 0.68 | 0.65 |
+| BioBERT only | 0.53 | 0.61 |
+| **MedAlert Fusion** | **0.73** | **0.77** |
+
+Fusion consistently outperforms either branch alone — which is the whole point.
+
+---
+
+##  Project Structure
+
+```
 MedAlert/
 ├── src/
 │   ├── data/
@@ -39,10 +76,12 @@ MedAlert/
 ├── app/
 │   └── app.py                   # Gradio web app
 └── tests/
-└── test_models.py           # Unit tests (12/12 passing)
+    └── test_models.py           # Unit tests (12/12 passing)
+```
+
 ---
 
-## 🚀 Setup
+## Getting Started
 
 ### 1. Clone the repo
 ```bash
@@ -55,7 +94,7 @@ cd MedAlert
 pip install -e .
 ```
 
-### 3. Train the model
+### 3. Train on demo data
 ```bash
 python scripts/train.py
 ```
@@ -65,42 +104,44 @@ python scripts/train.py
 python app/app.py
 ```
 
-Open `http://127.0.0.1:7860` in your browser.
+Then open `http://127.0.0.1:7860` — enter a drug name, patient details, and reported reactions to get an instant risk score with explanation.
 
 ---
 
-## 📊 Dataset
+## Dataset
 
-Uses **FDA FAERS** (Adverse Event Reporting System) — a public database of adverse drug event reports.
+Uses **FDA FAERS** (Adverse Event Reporting System) — a public database maintained by the FDA containing millions of real adverse drug event reports since 2004.
 
-- Demo mode: 500 synthetic samples mirroring FAERS schema
-- Real data: downloadable via `FAERSLoader.download()`
+- Demo mode uses 500 synthetic samples that mirror the FAERS schema exactly
+- Real data can be downloaded via `FAERSLoader.download()`
 
 ---
 
-## 🧪 Tests
+## Explainability
+
+Every prediction comes with a SHAP explanation — not just a score. The app shows which features pushed the risk up or down, so the output is actually useful in a clinical context rather than just a black box number.
+
+---
+
+## Tests
 
 ```bash
 python -m pytest tests/test_models.py -v
 ```
 
-All 12 tests passing across preprocessor, tabular model, fusion classifier, and save/load.
+12/12 tests passing across the preprocessor, tabular model, fusion classifier, and save/load pipeline.
 
 ---
 
-## 🔍 Explainability
-
-SHAP TreeExplainer on XGBoost provides per-prediction feature importance, shown in the Gradio app as top contributing risk factors.
-
----
-
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Component | Technology |
 |-----------|------------|
-| Clinical Text | BioBERT (dmis-lab/biobert-v1.1) |
+| Clinical Text | BioBERT (`dmis-lab/biobert-v1.1`) |
 | Structured Data | XGBoost |
 | Fusion Layer | PyTorch MLP |
 | Explainability | SHAP |
 | Web App | Gradio |
-| Data | FDA FAERS |
+| Dataset | FDA FAERS |
+
+---
