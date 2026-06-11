@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Environments
+.env
+.venv
+venv/
+env/
+
+# Data (large files — don't commit raw data)
+data/raw/
+data/processed/
+*.zip
+*.csv
+*.parquet
+
+# Models (large — use Git LFS or share via HuggingFace Hub)
+models_saved/
+*.pt
+*.pkl
+*.bin
+*.h5
+
+# Logs
+logs/
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb~
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Gradio
+gradio_cached_examples/
+flagged/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
